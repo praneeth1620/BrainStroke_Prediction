@@ -1,0 +1,17 @@
+{
+  "model": "EfficientNetB3",
+  "source": "PK_demo test split",
+  "metrics": {
+    "threshold": 0.355,
+    "accuracy": 0.9429000751314801,
+    "precision": 0.9638932496075353,
+    "recall": 0.9205397301349325,
+    "f1_score": 0.941717791411043,
+    "roc_auc": 0.9850142699734471,
+    "pr_auc": 0.9871285726384252,
+    "confusion_matrix": [[641, 23], [53, 614]],
+    "train_images": 6211,
+    "validation_images": 1331,
+    "test_images": 1331
+  }
+}

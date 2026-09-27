@@ -1,0 +1,17 @@
+{
+  "model_name": "EfficientNetB3_Brain_Stroke",
+  "version": "PK_demo",
+  "backbone": "EfficientNetB3",
+  "image_size": [300, 300],
+  "color_mode": "rgb",
+  "resize_method": "bilinear",
+  "resize_antialias": true,
+  "input_pixel_range": [0, 255],
+  "model_file": "efficientnet_b3_stroke.keras",
+  "threshold": 0.355,
+  "metrics_file": "metrics.json",
+  "classes": {
+    "0": "NORMAL",
+    "1": "STROKE"
+  }
+}
