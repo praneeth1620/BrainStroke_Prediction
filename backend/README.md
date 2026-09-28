@@ -13,7 +13,7 @@ The model expects RGB images resized to 300 x 300. The API accepts image uploads
 
 ## Run
 
-From this directory, run `docker compose up --build`. The API is available at `http://localhost:8000` and its interactive documentation at `/docs`.
+From the repository root, run `docker compose up --build`. The API is available at `http://localhost:8000` and its interactive documentation at `/docs`.
 
 For local development, install `requirements.txt` and run `uvicorn main:app --app-dir app --host 0.0.0.0 --port 8000`.
 

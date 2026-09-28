@@ -24,8 +24,15 @@ export default function FoodPage() {
     load();
   }, []);
 
-  const categories = ["All", ...new Set(items.map((item) => item.category))];
-  const filteredItems = filter === 'All' ? items : items.filter((item) => item.category === filter);
+  const seenNames = new Set<string>();
+  const uniqueItems = items.filter((item) => {
+    const key = item.name.normalize("NFKC").trim().toLowerCase();
+    if (seenNames.has(key)) return false;
+    seenNames.add(key);
+    return true;
+  });
+  const categories = ["All", ...new Set(uniqueItems.map((item) => item.category))];
+  const filteredItems = filter === 'All' ? uniqueItems : uniqueItems.filter((item) => item.category === filter);
 
   return (
     <AppShell>

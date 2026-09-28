@@ -12,8 +12,7 @@ import jwt
 import numpy as np
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, Response
 from PIL import Image
 from pydantic import BaseModel, EmailStr, field_validator
 from reportlab.lib.pagesizes import letter
@@ -25,8 +24,8 @@ from app.preprocess import process_image
 
 BASE_DIR = Path(__file__).resolve().parent
 MODELS_DIR = (BASE_DIR.parent / "models").resolve()
-DB_PATH = BASE_DIR.parent / "brain_stroke_app.db"
-UPLOAD_DIR = BASE_DIR.parent / "uploads"
+DB_PATH = Path(os.getenv("DATABASE_PATH", str(BASE_DIR.parent / "brain_stroke_app.db")))
+UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", str(BASE_DIR.parent / "uploads")))
 CONFIG_PATH = MODELS_DIR / "deployment_config.json"
 METRICS_PATH = MODELS_DIR / "metrics.json"
 
@@ -307,7 +306,7 @@ def save_uploaded_bytes(user_id: int, original_name: str | None, content: bytes)
     output_name = f"{stamp}_{sanitize_filename(original_name)}"
     file_path = user_upload_dir / output_name
     file_path.write_bytes(content)
-    return str(file_path.relative_to(BASE_DIR.parent))
+    return str(Path("uploads") / str(user_id) / output_name)
 
 
 def validate_brain_ct_upload(contents: bytes, content_type: str) -> bytes:
@@ -353,12 +352,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
-
-
 @app.on_event("startup")
 def startup_event() -> None:
     init_db()
+
+
+@app.get("/uploads/{relative_path:path}")
+def serve_upload(relative_path: str):
+    upload_root = UPLOAD_DIR.resolve()
+    file_path = (upload_root / relative_path).resolve()
+    if upload_root not in file_path.parents or not file_path.is_file():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Uploaded file not found.")
+    return FileResponse(file_path)
 
 
 @app.get("/")
@@ -634,7 +639,7 @@ def generate_report(prediction_id: int, current_user: dict = Depends(get_current
     with get_db_connection() as connection:
         user = connection.execute("SELECT full_name, email FROM users WHERE id = ?", (row["user_id"],)).fetchone()
 
-    file_path = (BASE_DIR.parent / row["image_reference"]).resolve()
+    file_path = (UPLOAD_DIR.parent / row["image_reference"]).resolve()
     if not file_path.exists():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Uploaded image not found.")
 

@@ -1,0 +1,6 @@
+.venv
+venv
+__pycache__
+*.py[cod]
+brain_stroke_app.db
+uploads

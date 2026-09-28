@@ -41,6 +41,13 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 
   if (!response.ok) {
     const detail = payload && typeof payload === "object" && "detail" in payload ? String((payload as { detail?: unknown }).detail) : "Request failed.";
+    const isAuthRequest = path === "/auth/login" || path === "/auth/register";
+    if (response.status === 401 && !isAuthRequest && typeof window !== "undefined") {
+      if (token) clearToken();
+      if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+        window.location.replace("/login");
+      }
+    }
     throw new Error(detail);
   }
 

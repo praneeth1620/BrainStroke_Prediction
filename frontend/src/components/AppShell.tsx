@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { BrainCircuit, History, LayoutDashboard, LogOut, Moon, Salad, ScanLine, ShieldCheck, Sun, UserRound } from "lucide-react";
 import { apiFetch, clearToken, getToken } from "@/lib/api";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/scan", label: "New Scan" },
-  { href: "/history", label: "Prediction History" },
-  { href: "/food", label: "Food & Lifestyle" },
-  { href: "/model", label: "Model Information" },
-  { href: "/profile", label: "Profile" },
+  { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { href: "/scan", label: "New Scan", Icon: ScanLine },
+  { href: "/history", label: "Prediction History", Icon: History },
+  { href: "/food", label: "Food & Lifestyle", Icon: Salad },
+  { href: "/model", label: "Model Information", Icon: BrainCircuit },
+  { href: "/profile", label: "Profile", Icon: UserRound },
 ];
 
 function subscribeToToken(callback: () => void) {
@@ -95,7 +96,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="topbar">
         <div className="brand-wrap">
           <Link href={token ? "/dashboard" : "/login"} className="brand" aria-label="NeuroView home">
-            <span className="brand-mark">N</span>
+            <span className="brand-mark"><BrainCircuit size={19} strokeWidth={1.8} /></span>
             <span>NEUROVIEW</span>
           </Link>
         </div>
@@ -107,21 +108,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={item.href}
               className={pathname === item.href ? "nav-link active" : "nav-link"}
             >
+              <item.Icon size={16} strokeWidth={1.9} aria-hidden="true" />
               {item.label}
             </Link>
           ))}
           {token && role === "admin" && (
             <Link href="/admin" className={isAdminPage ? "nav-link active" : "nav-link"}>
+              <ShieldCheck size={16} strokeWidth={1.9} aria-hidden="true" />
               Admin Dashboard
             </Link>
           )}
         </nav>
 
         <div className="nav-actions">
-          <button type="button" className="theme-toggle" onClick={toggleTheme}>
-            {theme === "light" ? "Dark mode" : "Light mode"}
+          <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>
+            {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+            <span>{theme === "light" ? "Dark mode" : "Light mode"}</span>
           </button>
-          <button type="button" className="ghost-btn" onClick={handleLogout}>Logout</button>
+          <button type="button" className="ghost-btn" onClick={handleLogout} aria-label="Logout"><LogOut size={16} /><span>Logout</span></button>
         </div>
       </header>
 
